@@ -1,0 +1,183 @@
+# import tensorflow, tkinter, keras and libraries
+
+import tensorflow as tf
+print(tf.__version__)
+
+from tensorflow import keras
+from tensorflow.keras.preprocessing import image
+
+import numpy as np
+import os
+
+import tkinter as tk
+from tkinter import *
+from tkinter import ttk
+from tkinter import filedialog
+from PIL import Image, ImageTk
+from tkinter import font as tkFont
+
+# import glob for directories
+
+import glob
+
+text_romanticism = "In Romanticism portraits and Romanticism art pieces, artists portrayed scenes of love, beauty, suspense, horror, anger, and adoration that were aimed to provide an escape from reality. Romantic-era paintings paid homage to the power of nature, honoring its unpredictability and beauty. Nature's potential for disaster was prominently shown in art, along with the portrayal of commanding, poignant feelings that induced empathy. Romantics glorified emotion and intuition over logic and intellect."
+text_reina = "The Italian Renaissance was a period in Italian history covering the 15th and 16th centuries. The period is known for the development of a culture that spread across Europe and marked the transition from the Middle Ages to modernity. Influenced by the forerunners of Renaissance paintings like Cimabue and Giotto, artists focused on the realistic depiction of human figures and anatomical correctness. Artists also utilized more intentional perspectives of figures and buildings and their placements within the space around them."
+text_post = "Post-Impressionism was a predominantly French art movement that developed roughly between 1886 and 1905, from the last Impressionist exhibition to the birth of Fauvism. Post-Impressionism emerged as a reaction against Impressionists' concern for the naturalistic depiction of light and colour. It was led by Paul Cézanne, Paul Gauguin, Vincent van Gogh and Georges Seurat. Post-Impressionists extended the use of vivid colors, thick application of paint, distinctive brush strokes, and real-life subject matter, and were more inclined to emphasize geometric forms, distort forms for expressive effect, and to use unnatural or arbitrary colors in their compositions."
+text_nouveau = "Art Nouveau, ornamental style of art that flourished between about 1890 and 1910 throughout Europe and the United States. Art Nouveau is characterized by its use of a long, sinuous, organic line and was employed most often in architecture, interior design, jewelry and glass design, posters, and illustration. Art Nouveau was aimed at modernizing design, seeking to escape the eclectic historical styles that had previously been popular. Artists drew inspiration from both organic and geometric forms, evolving elegant designs that united flowing, natural forms resembling the stems and blossoms of plants."
+text_baroque = "Baroque is a style of architecture, music, dance, painting, sculpture, poetry, and other arts that flourished in Europe from the early 17th century until the 1740s. Baroque emphasizes dramatic, exaggerated motion and clear, easily interpreted, detail. Due to its exuberant irregularities, Baroque art has often been defined as being bizarre, or uneven. Some of the qualities most frequently associated with the Baroque are grandeur, sensuous richness, drama, dynamism, movement, tension, emotional exuberance, and a tendency to blur distinctions between the various arts."
+text_surea = "Surrealism is a cultural movement that developed in Europe in the aftermath of World War I in which artists depicted unnerving, illogical scenes and developed techniques to allow the unconscious mind to express itself. Surrealism aims to revolutionise human experience. It balances a rational vision of life with one that asserts the power of the unconscious and dreams. The movement's artists find magic and strange beauty in the unexpected and the uncanny, the disregarded and the unconventional. A number of specific techniques were devised by the Surrealists to evoke psychic responses. Among these were frottage (rubbing with graphite over wood or other grained substances) and grattage (scraping the canvas)"
+text_street = "Street art is visual art created in public locations for public visibility. It has been associated with the terms "independent art", "post-graffiti", "neo-graffiti" and guerrilla art. Street art is often created in public spaces and usually elicits a strong political or social message. Street art is historically linked to breaking from traditional practices, be it in terms of subjects or artistic styles. Graffiti is characteristically made up of written words that are meant to represent a group or community in a covert way and in plain sight. The telltale sign of street art is that it usually includes images, illustrations, or symbols that are meant to convey a message."
+text_rococo = "Rococo is an exceptionally ornamental and theatrical style of architecture, art and decoration which combines asymmetry, scrolling curves, gilding, white and pastel colours, sculpted moulding, and frescoes to create surprise and the illusion of motion and drama. It is characterized by lightness, elegance, and an exuberant use of curving natural forms in ornamentation. The word Rococo is derived from the French word rocaille, which denoted the shell-covered rock work that was used to decorate artificial grottoes."
+text_impre = "Impressionism describes a style of painting developed in France during the mid-to-late 19th century; characterizations of the style include small, visible brushstrokes that offer the bare impression of form, unblended color and an emphasis on the accurate depiction of natural light. Impressionists rebelled against classical subject matter and embraced modernity, desiring to create works that reflected the world in which they lived. Uniting them was a focus on how light could define a moment in time, with color providing definition instead of black lines"
+text_real = "Realism was an artistic movement that emerged in France in the 1840s, around the 1848 Revolution.[1] Realists rejected Romanticism, which had dominated French literature and art since the early 19th century. Realism revolted against the exotic subject matter and the exaggerated emotionalism and drama of the Romantic movement. Instead, it sought to portray real and typical contemporary people and situations with truth and accuracy, and not avoiding unpleasant or sordid aspects of life. The movement aimed to focus on unidealized subjects and events that were previously rejected in art work."
+
+# adjusting the size of images into the same dimensions
+
+img_width = 250
+img_height = 250
+
+# import the pretrained model
+
+path_model = glob.glob(r'C:\**\Art_Class_Prediction_App/', recursive=True)
+path_model = str(path_model[0])
+path_model = path_model.replace('\\', '/')
+path_model = path_model +  "/best_class_model_savefile.h5"
+
+print(path_model)
+
+model = keras.models.load_model(path_model)
+
+# set the art classes 
+
+classes = ['Art Nouveau', 'Baroque', 'Impressionism', 'Italian Renaissance',
+       'Post-Impressionism', 'Realism', 'Rococo', 'Romanticism', 'Street Art',
+       'Surrealism']
+
+class RichText(tk.Text):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        default_font = tkFont.nametofont(self.cget("font"))
+
+        em = default_font.measure("m")
+        default_size = default_font.cget("size")
+        bold_font = tkFont.Font(**default_font.configure())
+        italic_font = tkFont.Font(**default_font.configure())
+        h1_font = tkFont.Font(**default_font.configure())
+
+        bold_font.configure(weight="bold")
+        italic_font.configure(slant="italic")
+        h1_font.configure(size=int(default_size*2), weight="bold")
+
+        self.tag_configure("bold", font=bold_font)
+        self.tag_configure("italic", font=italic_font)
+        self.tag_configure("h1", font=h1_font, spacing3=default_size)
+
+        lmargin2 = em + default_font.measure("\u2022 ")
+        self.tag_configure("bullet", lmargin1=em, lmargin2=lmargin2)
+
+        
+    def insert_bullet(self, index, text):
+        self.insert(index, f"\u2022 {text}", "bullet")
+
+
+class Root(Tk):
+    def __init__(self):
+        super(Root, self).__init__()
+        self.title("Python Art Class Predictor")
+        self.minsize(1280, 800)
+
+        self.labelFrame = ttk.LabelFrame(self, text = "Open File")
+        self.labelFrame.grid(column = 0, row = 1, padx = 20, pady = 20)
+
+        self.button()
+
+
+    def button(self):
+        self.button = ttk.Button(self.labelFrame, text = "Browse A File",command = self.fileDialog)
+        self.button.grid(column = 1, row = 1)
+
+
+    def fileDialog(self):
+
+        self.filename = filedialog.askopenfilename(initialdir =  "/", title = "Select A File", filetype =
+        (("jpeg files","*.jpg"),("all files","*.*")) )
+        self.label = ttk.Label(self.labelFrame, text = "")
+        self.label.grid(column = 1, row = 2)
+        head, tail = os.path.split(self.filename)
+        str_path = tail
+        str_path = str_path[:-4]
+        self.label.configure(text = str_path)
+
+        img = Image.open(self.filename)
+        
+        photo = ImageTk.PhotoImage(img)
+
+        self.label2 = Label(image=photo)
+        self.label2.image = photo 
+        self.label2.grid(column=3, row=4)
+
+        img = image.load_img(self.filename, target_size=(img_width, img_height, 3))
+        img = image.img_to_array(img)
+        img = img/255.0
+        img = img.reshape(1, img_width, img_height, 3)
+
+        print(self.filename)
+
+        # make the predctions based on highest possibilities, after indexing them
+
+        y_prob = model.predict(img)
+
+        top3 = np.argsort(y_prob[0])[:-4:-1]
+
+
+        if classes[top3[0]] == 'Surrealism':
+            text_info = text_surea
+        elif classes[top3[0]] == 'Street Art':
+            text_info = text_street 
+        elif classes[top3[0]] == 'Romanticism':
+            text_info = text_romanticism
+        elif classes[top3[0]] == 'Rococo':
+            text_info = text_rococo
+        elif classes[top3[0]] == 'Realism':
+            text_info = text_real
+        elif classes[top3[0]] == 'Post-Impressionism':
+            text_info = text_post
+        elif classes[top3[0]] == 'Italian Renaissance':
+            text_info = text_reina
+        elif classes[top3[0]] == 'Impressionism':
+            text_info = text_impre
+        elif classes[top3[0]] == 'Baroque':
+            text_info = text_baroque
+        elif classes[top3[0]] == 'Art Nouveau':
+            text_info = text_nouveau
+
+        root = tk.Tk()
+        text = RichText(root, width=40, height=15)
+        text.pack(fill="both", expand=True)
+
+        text.insert("end", classes[top3[0]], "h1")
+
+        text.insert("end", "\n")
+        text.insert("end", "\n")
+        text.insert("end", "\n")
+
+        text.insert("end", text_info)
+
+        text.insert("end", "\n")
+        text.insert("end", "\n")
+        text.insert("end", "\n")
+
+        text.insert("end", "If the prediction is wrong, here are the two next most likely predictions. I hope I got it right now.")
+
+        text.insert("end", "\n")
+        text.insert("end", "\n")
+
+        text.insert_bullet("end", classes[top3[1]])
+        text.insert("end", "\n")
+        text.insert_bullet("end", classes[top3[2]])
+
+
+
+root = Root()
+root.mainloop()
+
