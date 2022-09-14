@@ -4,7 +4,14 @@
   
 This software is producing predictions for a given image in 10 different artistic streams.
 
-- Bullet list
-              - Nested bullet
-                  - Sub-nested bullet etc
-          - Bullet list item 2 
+- Art Nouveau
+- Baroque
+- Impressionism
+- Italian Renaissance
+- Post Impressionism
+- Realism
+- Rococo
+- Romanticism
+- Street Art
+- Surrealism
+
